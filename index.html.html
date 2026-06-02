@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тест: Наскільки ти довіряєш своїй інтуїції?</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0e0e10;
+    color: #e8e4dc;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .container { max-width: 580px; width: 100%; }
+
+  #intro { text-align: center; padding: 48px 0; }
+
+  .eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #5a4840;
+    margin-bottom: 20px;
+  }
+
+  .main-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 42px;
+    line-height: 1.15;
+    color: #e8e4dc;
+    margin-bottom: 16px;
+  }
+
+  .main-title em { font-style: italic; color: #b8a99a; }
+
+  .subtitle {
+    font-size: 13px;
+    color: #6b6460;
+    line-height: 1.7;
+    max-width: 380px;
+    margin: 0 auto 36px;
+  }
+
+  .btn-start {
+    display: inline-block;
+    padding: 14px 40px;
+    background: transparent;
+    border: 1px solid #5a4840;
+    color: #c8c0b4;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-start:hover { background: #5a4840; color: #e8e4dc; }
+
+  #quiz { display: none; }
+
+  .progress-wrap { margin-bottom: 36px; }
+
+  .progress-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .progress-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #4a4540;
+  }
+
+  .progress-count { font-size: 10px; letter-spacing: 0.1em; color: #5a4840; }
+
+  .progress-bar { height: 1px; background: #1e1c1a; border-radius: 1px; overflow: hidden; }
+
+  .progress-fill {
+    height: 100%;
+    background: #5a4840;
+    border-radius: 1px;
+    transition: width 0.5s ease;
+  }
+
+  .question-block { animation: fadeIn 0.4s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .question-num {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #5a4840;
+    margin-bottom: 14px;
+  }
+
+  .question-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 28px;
+    line-height: 1.35;
+    color: #e8e4dc;
+    margin-bottom: 32px;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: #141416;
+    border: 1px solid #1e1e20;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .option::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0;
+    width: 0; height: 100%;
+    background: rgba(90,72,64,0.15);
+    transition: width 0.3s ease;
+  }
+
+  .option:hover::before { width: 100%; }
+  .option:hover { border-color: #3a2e2a; }
+
+  .option.selected { border-color: #5a4840; background: #1a1210; }
+  .option.selected::before { width: 100%; }
+
+  .opt-letter {
+    width: 26px; height: 26px;
+    border: 1px solid #2a2826;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; letter-spacing: 0.1em;
+    color: #6b6460; flex-shrink: 0;
+    transition: all 0.25s ease;
+  }
+
+  .option.selected .opt-letter { border-color: #5a4840; color: #c8c0b4; background: #5a4840; }
+
+  .opt-text { font-size: 14px; color: #9a9088; line-height: 1.5; transition: color 0.25s ease; }
+  .option.selected .opt-text, .option:hover .opt-text { color: #c8c0b4; }
+
+  .btn-next {
+    margin-top: 28px;
+    display: inline-block;
+    padding: 13px 36px;
+    background: transparent;
+    border: 1px solid #5a4840;
+    color: #c8c0b4;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .btn-next.visible { opacity: 1; pointer-events: all; }
+  .btn-next:hover { background: #5a4840; color: #e8e4dc; }
+
+  #result { display: none; text-align: center; padding: 48px 0; animation: fadeIn 0.5s ease; }
+
+  .result-score {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 80px; font-weight: 300;
+    color: #5a4840; line-height: 1; margin-bottom: 4px;
+  }
+
+  .result-score-label {
+    font-size: 10px; letter-spacing: 0.25em;
+    text-transform: uppercase; color: #4a4540; margin-bottom: 28px;
+  }
+
+  .result-type {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 34px; font-weight: 300;
+    color: #e8e4dc; margin-bottom: 16px; line-height: 1.2;
+  }
+
+  .result-type em { font-style: italic; color: #b8a99a; }
+
+  .result-desc {
+    font-size: 14px; color: #9a9088;
+    line-height: 1.75; max-width: 420px;
+    margin: 0 auto 32px;
+  }
+
+  .result-insight {
+    background: #141416;
+    border: 1px solid #1e1e20;
+    border-left: 2px solid #5a4840;
+    border-radius: 3px;
+    padding: 20px 24px;
+    text-align: left; margin-bottom: 32px;
+  }
+
+  .insight-label {
+    font-size: 9px; letter-spacing: 0.25em;
+    text-transform: uppercase; color: #5a4840; margin-bottom: 8px;
+  }
+
+  .insight-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px; font-style: italic;
+    color: #c8c0b4; line-height: 1.5;
+  }
+
+  .btn-share {
+    display: inline-block; padding: 14px 40px;
+    background: transparent; border: 1px solid #5a4840;
+    color: #c8c0b4; font-family: 'Inter', sans-serif;
+    font-size: 11px; letter-spacing: 0.2em;
+    text-transform: uppercase; cursor: pointer;
+    border-radius: 2px; transition: all 0.3s ease;
+    margin-right: 10px; margin-bottom: 10px;
+  }
+
+  .btn-share:hover { background: #5a4840; color: #e8e4dc; }
+
+  .btn-retry {
+    display: inline-block; padding: 14px 40px;
+    background: transparent; border: 1px solid #2a2826;
+    color: #6b6460; font-family: 'Inter', sans-serif;
+    font-size: 11px; letter-spacing: 0.2em;
+    text-transform: uppercase; cursor: pointer;
+    border-radius: 2px; transition: all 0.3s ease; margin-bottom: 10px;
+  }
+
+  .btn-retry:hover { border-color: #5a4840; color: #c8c0b4; }
+
+  .channel-hint {
+    margin-top: 28px; padding: 16px;
+    background: #0a0a0c; border-radius: 3px;
+    font-size: 12px; color: #4a4540; line-height: 1.6;
+  }
+
+  .divider-line { width: 40px; height: 1px; background: #2a2826; margin: 0 auto 28px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div id="intro">
+    <div class="eyebrow">Психологічний тест</div>
+    <h1 class="main-title">Наскільки ти довіряєш<br>своїй <em>інтуїції?</em></h1>
+    <p class="subtitle">7 запитань. 3 хвилини. Дізнайся, чи чуєш ти себе — чи вже давно перестав.</p>
+    <div class="divider-line"></div>
+    <button class="btn-start" onclick="startQuiz()">Почати тест</button>
+  </div>
+
+  <div id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-top">
+        <span class="progress-label">Запитання</span>
+        <span class="progress-count" id="progress-count">1 / 7</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width: 14%"></div>
+      </div>
+    </div>
+    <div class="question-block" id="question-block"></div>
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">Наступне запитання →</button>
+  </div>
+
+  <div id="result"></div>
+
+</div>
+
+<script>
+const questions = [
+  {
+    text: "Ти заходиш у кімнату з незнайомими людьми. Що ти робиш?",
+    options: [
+      { text: "Одразу відчуваю атмосферу і розумію, чи комфортно мені тут", score: 3 },
+      { text: "Спостерігаю, аналізую, потім роблю висновки", score: 2 },
+      { text: "Намагаюся не робити поспішних висновків — хто його знає", score: 1 },
+      { text: "Не звертаю особливої уваги, поки не поспілкуюся", score: 0 }
+    ]
+  },
+  {
+    text: "Ти приймаєш важливе рішення. Логіка каже «так», але всередині щось стискається. Як вчиниш?",
+    options: [
+      { text: "Прислухаюся до відчуття — воно важливіше за будь-які аргументи", score: 3 },
+      { text: "Спробую розібратися, звідки це відчуття", score: 2 },
+      { text: "Швидше за все, все одно вчиню за логікою", score: 1 },
+      { text: "Відчуття — це просто страх. Не зважаю на це", score: 0 }
+    ]
+  },
+  {
+    text: "Згадай момент, коли ти проігнорував внутрішній голос. Що сталося?",
+    options: [
+      { text: "Пошкодував. Інтуїція виявилася правою", score: 3 },
+      { text: "По-різному. Іноді правильно зробив, що не послухав", score: 2 },
+      { text: "Важко сказати, я це не аналізував", score: 1 },
+      { text: "Не пам'ятаю таких моментів — я не довіряю «голосам»", score: 0 }
+    ]
+  },
+  {
+    text: "Твій новий знайомий справляє чудове враження. Але щось у ньому тебе бентежить. Ти:",
+    options: [
+      { text: "Тримаю дистанцію, навіть якщо не можу пояснити чому", score: 3 },
+      { text: "Зауважую збентеження, але продовжую спілкуватися обережно", score: 2 },
+      { text: "Переконую себе, що це забобони", score: 1 },
+      { text: "Повністю довіряю першому враженню — він подобається", score: 0 }
+    ]
+  },
+  {
+    text: "Як часто твоє перше відчуття про людину або ситуацію виявляється правильним?",
+    options: [
+      { text: "Майже завжди. Я вже давно це помітив", score: 3 },
+      { text: "Часто, але не завжди", score: 2 },
+      { text: "Рідко. Перші враження мене обманюють", score: 1 },
+      { text: "Я ніколи не відстежував цього", score: 0 }
+    ]
+  },
+  {
+    text: "Ти в середині проєкту розумієш, що щось іде не так — але конкретної причини немає. Ти:",
+    options: [
+      { text: "Зупиняюся і розбираюся — значить, щось реально не так", score: 3 },
+      { text: "Кажу про це команді або близьким", score: 2 },
+      { text: "Продовжую, сподіваючись що само мине", score: 1 },
+      { text: "Ігнорую — без фактів нема про що говорити", score: 0 }
+    ]
+  },
+  {
+    text: "Коли ти думаєш про інтуїцію, що перше спадає на думку?",
+    options: [
+      { text: "Це мій компас. Я давно йому довіряю", score: 3 },
+      { text: "Хотів би довіряти більше, але не завжди виходить", score: 2 },
+      { text: "Щось містичне, я до цього скептично ставлюся", score: 1 },
+      { text: "Я не вірю в інтуїцію. Є логіка і факти", score: 0 }
+    ]
+  }
+];
+
+const results = [
+  {
+    min: 0, max: 6,
+    type: "Голос всередині — <em>майже не чутний</em>",
+    desc: "Ти звик довіряти логіці, фактам і чужим думкам більше, ніж собі. Це не погано — але саме те відчуття «щось не так» найчастіше є найточнішим сигналом. Ти його поки не чуєш або не даєш йому права голосу.",
+    insight: "Інтуїція не зникає — вона просто вчиться мовчати, коли її не слухають."
+  },
+  {
+    min: 7, max: 12,
+    type: "Ти чуєш себе — але <em>не завжди віриш</em>",
+    desc: "Внутрішній голос у тебе є — ти його помічаєш. Але між «помітив» і «довірився» часто стоїть сумнів, логіка або чужа думка. Саме тут губляться більшість правильних рішень.",
+    insight: "Ти вже чуєш. Наступний крок — навчитися не пояснювати це відчуття, а просто йому слідувати."
+  },
+  {
+    min: 13, max: 17,
+    type: "Інтуїція — твій <em>робочий інструмент</em>",
+    desc: "Ти вмієш чути себе і в більшості випадків довіряєш цьому. Бувають моменти, коли страх або чужий тиск заглушують сигнал — але ти це помічаєш. Це вже дуже багато.",
+    insight: "Люди з розвиненою інтуїцією не приймають рішення швидше — вони просто рідше про них шкодують."
+  },
+  {
+    min: 18, max: 21,
+    type: "Ти живеш у <em>повному контакті</em> з собою",
+    desc: "Твоя інтуїція — не випадковість, це навичка. Ти давно навчився відрізняти страх від чуття, шум від сигналу. Такі люди рідко шкодують про свої рішення — бо вони прийняті зсередини, а не ззовні.",
+    insight: "Твоє завдання зараз — не розвивати інтуїцію, а не руйнувати її під тиском чужих очікувань."
+  }
+];
+
+let current = 0;
+let scores = [];
+let selected = null;
+
+function startQuiz() {
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  selected = null;
+  const q = questions[current];
+  const letters = ['А', 'Б', 'В', 'Г'];
+  const block = document.getElementById('question-block');
+  const btnNext = document.getElementById('btn-next');
+
+  btnNext.classList.remove('visible');
+  btnNext.textContent = current === questions.length - 1 ? 'Дізнатися результат →' : 'Наступне запитання →';
+
+  document.getElementById('progress-count').textContent = `${current + 1} / ${questions.length}`;
+  document.getElementById('progress-fill').style.width = `${((current + 1) / questions.length) * 100}%`;
+
+  block.innerHTML = `
+    <div class="question-num">Запитання ${current + 1}</div>
+    <div class="question-text">${q.text}</div>
+    <div class="options">
+      ${q.options.map((opt, i) => `
+        <div class="option" onclick="selectOption(${i})" data-index="${i}">
+          <div class="opt-letter">${letters[i]}</div>
+          <div class="opt-text">${opt.text}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function selectOption(index) {
+  selected = index;
+  document.querySelectorAll('.option').forEach((el, i) => {
+    el.classList.toggle('selected', i === index);
+  });
+  document.getElementById('btn-next').classList.add('visible');
+}
+
+function nextQuestion() {
+  if (selected === null) return;
+  scores.push(questions[current].options[selected].score);
+  current++;
+  if (current >= questions.length) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  const total = scores.reduce((a, b) => a + b, 0);
+  const res = results.find(r => total >= r.min && total <= r.max);
+
+  document.getElementById('quiz').style.display = 'none';
+  const resultEl = document.getElementById('result');
+  resultEl.style.display = 'block';
+
+  resultEl.innerHTML = `
+    <div class="eyebrow">Твій результат</div>
+    <div class="result-score">${total}</div>
+    <div class="result-score-label">з 21 бала</div>
+    <div class="divider-line"></div>
+    <div class="result-type">${res.type}</div>
+    <p class="result-desc">${res.desc}</p>
+    <div class="result-insight">
+      <div class="insight-label">Інсайт для тебе</div>
+      <div class="insight-text">${res.insight}</div>
+    </div>
+    <button class="btn-share" onclick="shareResult(${total}, '${res.type.replace(/<[^>]+>/g, '')}')">Поділитися результатом</button>
+    <button class="btn-retry" onclick="retryTest()">Пройти знову</button>
+    <div class="channel-hint">
+      Більше про те, як чути себе — у каналі про інтуїцію 👇
+      <br><br>
+      <a href="https://t.me/+eOf-5YFVoVBhNzky" target="_blank" style="display:inline-block;margin-top:8px;padding:13px 32px;background:transparent;border:1px solid #5a4840;color:#c8c0b4;font-family:'Inter',sans-serif;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:all 0.3s ease;" onmouseover="this.style.background='#5a4840';this.style.color='#e8e4dc'" onmouseout="this.style.background='transparent';this.style.color='#c8c0b4'">Перейти в канал →</a>
+    </div>
+  `;
+}
+
+function shareResult(score, type) {
+  const text = `Пройшов тест "Наскільки ти довіряєш своїй інтуїції?"\n\nМій результат: ${score}/21 — ${type}\n\nПройди сам 👇`;
+  if (navigator.share) {
+    navigator.share({ text });
+  } else {
+    navigator.clipboard.writeText(text).then(() => alert('Текст скопійовано! Поділись у будь-якому месенджері.'));
+  }
+}
+
+function retryTest() {
+  current = 0;
+  scores = [];
+  selected = null;
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  renderQuestion();
+}
+</script>
+</body>
+</html>
